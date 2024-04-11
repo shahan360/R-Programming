@@ -1,0 +1,68 @@
+#RMySQLPackage
+# install.packages("RMySQL")
+
+# Load required package
+library(RMySQL)
+
+# Connecting R to MySQL
+# Create a connection Object to MySQL database.
+# We will connect to the sample database named "sakila" that comes with MySQL installation.
+mysqlconnection <- dbConnect(MySQL(), user = 'root', password = 'Mayank@1993', dbname = 'sakila', host = 'localhost')
+
+# List the tables available in this database.
+dbListTables(mysqlconnection)
+
+# Querying the Tables
+# Query the "actor" table to get all the rows.
+result <- dbSendQuery(mysqlconnection, "SELECT * FROM actor")
+
+# Store the result in an R data frame object. n = 5 is used to fetch first 5 rows.
+data.frame <- fetch(result, n = 5)
+print(data.frame)
+
+# Close the result set
+dbClearResult(result)
+
+# Query with Filter Clause
+result <- dbSendQuery(mysqlconnection, "SELECT * FROM actor WHERE last_name = 'TORN'")
+
+# Fetch all the records (with n = -1) and store them as a data frame.
+data.frame <- fetch(result, n = -1)
+print(data.frame)
+
+# Create a mtcars table in the sakila database
+# dbSendQuery(mysqlconnection, "CREATE TABLE mtcars (
+#                                  mpg DOUBLE,
+#                                  cyl INT,
+#                                  disp DOUBLE,
+#                                  hp INT,
+#                                  drat DOUBLE,
+#                                  wt DOUBLE,
+#                                  qsec DOUBLE,
+#                                  vs INT,
+#                                  am INT,
+#                                  gear INT,
+#                                  carb INT
+#                                )")
+
+
+#Updating Rows in the Tables
+dbSendQuery(mysqlconnection, "update mtcars set disp = 168.5 where hp = 110")
+
+# Inserting Data into Tables
+dbSendQuery(mysqlconnection,
+   "INSERT INTO mtcars(mpg, cyl, disp, hp, drat, wt, qsec, vs, am, gear, carb)
+   VALUES(21, 6, 168.5, 110, 3.9, 2.875, 17.02, 0, 1, 4, 4)"
+)
+
+#Creating Tables in MySql
+# Create the connection object to the database where we want to create the table.
+mysqlconnection = dbConnect(MySQL(), user = 'root', password = 'Mayank@1993', dbname = 'sakila', 
+   host = 'localhost')
+
+# Use the R data frame "mtcars" to create the table in MySql.
+# All the rows of mtcars are taken inot MySql.
+dbWriteTable(mysqlconnection, "mtcars", mtcars[, ], overwrite = TRUE)
+
+#Dropping Tables in MySql
+dbSendQuery(mysqlconnection, 'drop table if exists mtcars')
